@@ -7,3 +7,4 @@ storage.key
 key.json
 variables.tf
 user_data.sh
+.vscode/
