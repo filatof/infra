@@ -48,6 +48,36 @@ resource "yandex_vpc_subnet" "subnet-b" {
   network_id     = yandex_vpc_network.web-net.id
 }
 
+#----------security group
+resource "yandex_vpc_security_group" "group1" {
+  name        = "my-security-group"
+  description = "description for my security group"
+  network_id  = yandex_vpc_network.web-net.id
+
+  labels = {
+    my-label = "my-label-value"
+  }
+
+  dynamic "ingress" {
+    for_each = ["22", "80", "443", "3000", "3100", "9090", "9080", "9093", "9095", "9100", "9113", "9104" ]
+    content {
+      protocol       = "TCP"
+      description    = "rule1 description"
+      v4_cidr_blocks = ["0.0.0.0/0"]
+      from_port      = ingress.value
+      to_port        = ingress.value
+    }
+  }
+
+  egress {
+    protocol       = "ANY"
+    description    = "rule2 description"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+    from_port      = 0
+    to_port        = 65535
+  }
+}
+
 #-------------определяем группу серверов
 resource "yandex_compute_instance_group" "web-group" {
   name                = "test-ig"
@@ -77,7 +107,7 @@ resource "yandex_compute_instance_group" "web-group" {
       #файл с ключами для доступа на сервер
       user-data = "${file("~/metafile.yaml")}"
       #ssh-keys = "fill:${file("~/.ssh/id_ed25519.pub")}"
-      user-data = "${file("user_data.sh")}"
+      #user-data = "${file("user_data.sh")}"
 
     }
     network_settings {
@@ -87,7 +117,7 @@ resource "yandex_compute_instance_group" "web-group" {
 
   scale_policy {
     fixed_scale {
-      size = 1 # пока будет один сервер
+      size = 2 # пока будет один сервер
     }
   }
 
@@ -120,7 +150,6 @@ resource "yandex_lb_network_load_balancer" "web" {
 
   attached_target_group {
     target_group_id = yandex_compute_instance_group.web-group.load_balancer[0].target_group_id
-
     healthcheck {
       name = "http"
       http_options {
