@@ -18,9 +18,8 @@ terraform {
 
     skip_region_validation      = true
     skip_credentials_validation = true
-    skip_requesting_account_id  = true # Необходимая опция Terraform для версии 1.6.1 и старше.
-    skip_s3_checksum            = true # Необходимая опция при описании бэкенда для Terraform версии 1.6.3 и старше.
-
+    skip_requesting_account_id  = true 
+    skip_s3_checksum            = true 
   }
 }
 
@@ -65,7 +64,7 @@ resource "yandex_compute_instance_group" "web-group" {
     boot_disk {
       mode = "READ_WRITE"
       initialize_params {
-        image_id = "fd87j6d92jlrbjqbl32q"
+        image_id = "fd87j6d92jlrbjqbl32q" #ubuntu 22.04
       }
     }
     network_interface {
@@ -75,6 +74,7 @@ resource "yandex_compute_instance_group" "web-group" {
     }
 
     metadata = {
+      #файл с ключами для доступа на сервер
       user-data = "${file("~/metafile.yaml")}"
       #ssh-keys = "fill:${file("~/.ssh/id_ed25519.pub")}"
       user-data = "${file("user_data.sh")}"
@@ -87,7 +87,7 @@ resource "yandex_compute_instance_group" "web-group" {
 
   scale_policy {
     fixed_scale {
-      size = 2
+      size = 1 # пока будет один сервер
     }
   }
 
