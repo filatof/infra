@@ -59,7 +59,7 @@ resource "yandex_vpc_security_group" "group1" {
   }
 
   dynamic "ingress" {
-    for_each = ["22", "80", "443", "3000", "3100", "9090", "9080", "9093", "9095", "9100", "9113", "9104" ]
+    for_each = ["22", "80", "443", "3000", "3100", "8080", "9090", "9080", "9093", "9095", "9100", "9113", "9104" ]
     content {
       protocol       = "TCP"
       description    = "rule1 description"
