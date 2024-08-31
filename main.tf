@@ -182,3 +182,7 @@ resource "yandex_dns_recordset" "web" {
 output "web_loadbalancer_url" {
   value = [for listener in yandex_lb_network_load_balancer.web.listener : [for addr in listener.external_address_spec : addr.address if listener.name == "web-listener"][0]][0]
 }
+
+output "instance_ips" {
+  value = [for instance in yandex_compute_instance_group.web-group.instances : instance.network_interface[0].nat_ip_address]
+}
