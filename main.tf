@@ -117,7 +117,7 @@ resource "yandex_compute_instance_group" "web-group" {
 
   scale_policy {
     fixed_scale {
-      size = 2 # пока будет один сервер
+      size = 1 # пока будет один сервер
     }
   }
 
@@ -142,7 +142,7 @@ resource "yandex_lb_network_load_balancer" "web" {
 
   listener {
     name = "web-listener"
-    port = 80
+    port = 8080
     external_address_spec {
       ip_version = "ipv4"
     }
@@ -153,7 +153,7 @@ resource "yandex_lb_network_load_balancer" "web" {
     healthcheck {
       name = "http"
       http_options {
-        port = 80
+        port = 8080
         path = "/"
       }
     }
@@ -164,11 +164,9 @@ resource "yandex_lb_network_load_balancer" "web" {
 resource "yandex_dns_zone" "example_zone" {
   name        = "nanocorpinfra"
   description = "my zone dns"
-
   labels = {
     label1 = "lable_zone_dns"
   }
-
   zone    = "nanocorpinfra.ru."
   public  = true
 }
@@ -178,7 +176,6 @@ resource "yandex_dns_recordset" "web" {
   name    = "www.nanocorpinfra.ru."
   type    = "A"
   ttl     = 300
-  
   data =  [for listener in yandex_lb_network_load_balancer.web.listener : [for addr in listener.external_address_spec : addr.address if listener.name == "web-listener"][0]]
 }
 
