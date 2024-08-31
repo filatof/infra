@@ -18,7 +18,7 @@
 
 - [Terraform](https://www.terraform.io/downloads.html)
 - [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
-- Доступ к облачному провайдеру (например, AWS, GCP, Azure)
+- Доступ к облачному провайдеру Yandex cloud
 
 ## Установка Terraform
 
