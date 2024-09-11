@@ -7,3 +7,5 @@
       tags: docker
     - role: gitlab
       tags: gitlab
+    - role: gitlab-runner
+      tags: gitlab-runner
