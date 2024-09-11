@@ -1,0 +1,10 @@
+external_url 'https://gitlab.infrastruct.ru'
+
+letsencrypt['enable'] = true
+letsencrypt['contact_emails'] = ['filatof@gmail.com']
+letsencrypt['auto_renew'] = true
+
+nginx['redirect_http_to_https'] = true
+nginx['listen_https'] = true
+nginx['ssl_certificate'] = "/etc/gitlab/ssl/gitlab.infrastruct.ru.crt"
+nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/gitlab.infrastruct.ru.key"
