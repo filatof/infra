@@ -3,5 +3,7 @@
   hosts: all
   become: true
   roles:
-    - role: ericsysmin.docker.docker
-  tags: docker
+    - role: docker
+      tags: docker
+    - role: gitlab
+      tags: gitlab

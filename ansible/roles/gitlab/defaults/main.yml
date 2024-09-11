@@ -1,0 +1,6 @@
+gitlab_port_http: 80
+gitlab_port_https: 443
+gitlab_ssh_port: 22
+gitlab_volume_config: "/srv/gitlab/config"
+gitlab_volume_logs: "/srv/gitlab/logs"
+gitlab_volume_data: "/srv/gitlab/data"
