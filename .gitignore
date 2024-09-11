@@ -1,10 +1,10 @@
 
-.terraform/
-.terraform.lock.hcl
-terraform.tfstate
-terraform.tfstate.backup
+.terraform
+*.tfstate
+*.tfstate.backup
 storage.key
 key.json
 variables.tf
 user_data.sh
-.vscode/
+.vscode
+.DS_Store

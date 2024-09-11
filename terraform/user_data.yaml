@@ -1,0 +1,10 @@
+#cloud-config
+package_update: true
+packages:
+  #- nginx
+
+runcmd:
+  #- systemctl start nginx
+  #- systemctl enable nginx
+  - sed -i 's/#Port 22/Port 2222/' /etc/ssh/sshd_config
+  - systemctl restart sshd
