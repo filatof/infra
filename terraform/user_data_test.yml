@@ -1,0 +1,21 @@
+#cloud-config
+datasource:
+  Ec2:
+    strict_id: false
+ssh_pwauth: no
+users:
+ - name: fill
+   sudo: 'ALL=(ALL) NOPASSWD:ALL'
+   shell: /bin/bash  
+   ssh_authorized_keys:  
+   - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL+O6cXczlSLnL0wZSMe6qRNKpfbdiG6BtYwCmvi5ctR fill@Macmini.local
+   - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOlPFhFwKepToM3D/5wgUfFsPsv99sZkfUr9gnuhYYr/ fill@MacBookAir.local
+   - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIClYHWXZAqPK6vWZFHSQ+Wd78C7nlRj5OvW2nyEDdtHD fill@ubntuserver
+packages:
+   - nginx
+
+runcmd:
+   - sed -i -- "s/nginx/${HOSTNAME}/" /var/www/html/index.nginx-debian.html
+   - sed -i 's/#Port 22/Port 2222/' /etc/ssh/sshd_config
+   - systemctl restart sshd
+
