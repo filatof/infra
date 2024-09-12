@@ -4,20 +4,27 @@
   become: true
   roles:
     - role: docker
-      tags: docker
+  tags: docker
+
+- name: Install gitlab
+  hosts: gitlab
+  become: true
+  roles:
+    - role: gitlab
+  tags: gitlab
 
 - name: Install runner
   hosts: runner
   become: true
   roles:
     - role: gitlab-runner
-      tags: gitlab-runner
+  tags: gitlab-runner
 
 - name: Install ansible
   hosts: ansible
   become: true
   roles:
     - role: install_ansible
-      tags: ansible
+  tags: ansible
 
   

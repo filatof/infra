@@ -1,7 +1,7 @@
 
-gitlab ansible_host=51.250.88.225 ansible_port=2222 ansible_user='fill' ansible_ssh_private_key_file='/Users/fill/.ssh/id_ed25519'
+gitlab ansible_host=84.201.158.114 ansible_port=2222 ansible_user='fill' ansible_ssh_private_key_file='/Users/fill/.ssh/id_ed25519'
 
-test ansible_host=84.201.140.122 ansible_port=2222 ansible_user='fill' ansible_ssh_private_key_file='/Users/fill/.ssh/id_ed25519'
+test ansible_host=89.169.163.76 ansible_port=2222 ansible_user='fill' ansible_ssh_private_key_file='/Users/fill/.ssh/id_ed25519'
 
 [docker]
 gitlab
