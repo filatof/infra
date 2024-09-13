@@ -21,7 +21,7 @@
     env:
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'https://gitlab.infrastruct.ru'
-        letsencrypt['enable'] = true
+        letsencrypt['enable'] = true 
         letsencrypt['contact_emails'] = ['filatof@gmail.com']
         letsencrypt['auto_renew'] = true
         nginx['redirect_http_to_https'] = true
@@ -40,7 +40,7 @@
   wait_for:
     port: 443
     host: gitlab.infrastruct.ru
-    timeout: 300
+    timeout: 600
   become: yes
 
 - name: Reconfigure GitLab to enable Let's Encrypt
