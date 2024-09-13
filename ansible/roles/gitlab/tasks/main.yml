@@ -17,22 +17,34 @@
       - "/srv/gitlab/config:/etc/gitlab"
       - "/srv/gitlab/logs:/var/log/gitlab"
       - "/srv/gitlab/data:/var/opt/gitlab"
+      #- "/srv/gitlab/ssl:/etc/gitlab/ssl"  # Монтируем директорию с сертификатами
     restart_policy: always
     env:
       GITLAB_OMNIBUS_CONFIG: |
-        external_url 'https://gitlab.infrastruct.ru'
-        letsencrypt['enable'] = true 
+        #--------------------
+        external_url 'https://git.infrastruct.ru'
+        letsencrypt['enable'] = true
         letsencrypt['contact_emails'] = ['filatof@gmail.com']
         letsencrypt['auto_renew'] = true
         nginx['redirect_http_to_https'] = true
         nginx['listen_https'] = true
-    
+        # Настройки Docker registry
+        registry_external_url 'https://git.infrastruct.ru'
+        gitlab_rails['registry_enabled'] = true
+        gitlab_rails['registry_host'] = 'git.infrastruct.ru'
+        gitlab_rails['registry_port'] = "443"
+        gitlab_rails['registry_path'] = "/var/opt/gitlab/gitlab-rails/shared/registry"
+        registry['storage'] = {
+          'filesystem' => {
+            'rootdirectory' => '/var/opt/gitlab/gitlab-rails/shared/registry'
+          }
+        }
   become: yes
 
 - name: Wait for GitLab to start
   wait_for:
     port: 443
-    host: gitlab.infrastruct.ru
+    host: git.infrastruct.ru
     timeout: 300
   become: yes
 
