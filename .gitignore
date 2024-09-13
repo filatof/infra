@@ -3,7 +3,9 @@
 *.tfstate
 *.tfstate.backup
 storage.key
+di_storage.key
 key.json
+di_key.json
 variables.tf
 user_data.sh
 .vscode

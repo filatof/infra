@@ -81,7 +81,7 @@ resource "yandex_vpc_security_group" "group1" {
 #-------------определяем группу серверов
 resource "yandex_compute_instance_group" "web-group" {
   name                = "test-ig"
-  service_account_id  = "ajees7jeivpq5bp41lks"
+  service_account_id  = "ajeajhouhlmnh5ekgqgl"
   deletion_protection = false
   instance_template {
     platform_id = "standard-v1"
