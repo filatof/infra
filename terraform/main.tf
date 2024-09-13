@@ -11,10 +11,10 @@ terraform {
     endpoints = {
       s3 = "https://storage.yandexcloud.net"
     }
-    bucket                   = "test-tfstate-backet"
+    bucket                   = "terraform.st"
     region                   = "ru-central1"
-    key                      = "instance-group.tfstate"
-    shared_credentials_files = ["storage.key"] #ссылка на ключ доступа к бакету
+    key                      = "gitlab.serv"
+    shared_credentials_files = ["di_storage.key"] #ссылка на ключ доступа к бакету
 
     skip_region_validation      = true
     skip_credentials_validation = true
@@ -24,9 +24,9 @@ terraform {
 }
 
 provider "yandex" {
-  service_account_key_file = "key.json"
-  cloud_id                 = "b1givfjnecaq6gsd91ml"
-  folder_id                = "b1g7qh7t0i4sftogmaue"
+  service_account_key_file = "di_key.json"
+  cloud_id                 = "b1gko09r3v9oqrjdtl6h"
+  folder_id                = "b1g5f5kb2cvic3d8ql5l"
   zone                     = "ru-central1-a"
 }
 
@@ -87,9 +87,9 @@ resource "yandex_compute_instance_group" "web-group" {
     platform_id = "standard-v1"
     name         = "test-{instance.index}" # Присваиваем уникальное имя каждому инстансу в группе
     resources {
-      memory        = 1
+      memory        = 2
       cores         = 2
-      core_fraction = 5
+      #core_fraction = 5
     }
     boot_disk {
       mode = "READ_WRITE"
