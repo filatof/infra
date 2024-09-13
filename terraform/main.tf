@@ -178,7 +178,7 @@ resource "yandex_compute_instance" "gitlab" {
   zone        = "ru-central1-a"
   resources {
     cores         = 2
-    memory        = 4
+    memory        = 8
   }
   boot_disk {
     disk_id = yandex_compute_disk.boot-disk.id

@@ -26,21 +26,14 @@
         letsencrypt['auto_renew'] = true
         nginx['redirect_http_to_https'] = true
         nginx['listen_https'] = true
-        registry['enable'] = true
-        registry['external_url'] = 'https://gitlab.infrastruct.ru:5050'
-        registry['enable'] = true
-        registry['storage'] = {
-          'filesystem' => {
-            'rootdirectory' => '/var/opt/gitlab/registry'
-          }
-        }
+    
   become: yes
 
 - name: Wait for GitLab to start
   wait_for:
     port: 443
     host: gitlab.infrastruct.ru
-    timeout: 600
+    timeout: 300
   become: yes
 
 - name: Reconfigure GitLab to enable Let's Encrypt
