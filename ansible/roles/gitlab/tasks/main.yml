@@ -34,6 +34,9 @@
         gitlab_rails['registry_host'] = 'git.infrastruct.ru'
         gitlab_rails['registry_port'] = "443"
         gitlab_rails['registry_path'] = "/var/opt/gitlab/gitlab-rails/shared/registry"
+        registry['env'] = {
+          "REGISTRY_HTTP_RELATIVEURLS" => true
+        }
         registry['storage'] = {
           'filesystem' => {
             'rootdirectory' => '/var/opt/gitlab/gitlab-rails/shared/registry'
