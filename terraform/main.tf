@@ -230,6 +230,14 @@ resource "yandex_dns_recordset" "gitlab" {
   data =  [yandex_compute_instance.gitlab.network_interface.0.nat_ip_address]
 }
 
+resource "yandex_dns_recordset" "registry" {
+  zone_id = yandex_dns_zone.example_zone.id
+  name    = "registry.gitlab.infrastruct.ru."
+  type    = "A"
+  ttl     = 300
+  data =  [yandex_compute_instance.gitlab.network_interface.0.nat_ip_address]
+}
+
 
 output "web_loadbalancer_ip" {
   value = [for listener in yandex_lb_network_load_balancer.web.listener : [for addr in listener.external_address_spec : addr.address if listener.name == "web-listener"][0]][0]
