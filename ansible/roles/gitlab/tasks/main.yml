@@ -1,57 +1,30 @@
-- name: Pull GitLab Docker image
-  docker_image:
-    name: gitlab/gitlab-ce
-    tag: latest
-    source: pull
+- name: Ensure pip3 is installed
+  apt:
+    name: python3-pip
+    state: present
+
+# Установим библиотеку docker для питона
+- name: Install required Python packages for Docker
+  pip:
+    name: docker
+    state: present
+    executable: pip3 
   become: yes
 
-- name: Run GitLab Docker container
-  docker_container:
-    name: gitlab
-    image: gitlab/gitlab-ce:latest
-    ports:
-      - "80:80"
-      - "443:443"
-      - "22:22"
-    volumes:
-      - "/srv/gitlab/config:/etc/gitlab"
-      - "/srv/gitlab/logs:/var/log/gitlab"
-      - "/srv/gitlab/data:/var/opt/gitlab"
-      #- "/srv/gitlab/ssl:/etc/gitlab/ssl"  # Монтируем директорию с сертификатами
-    restart_policy: always
-    env:
-      GITLAB_OMNIBUS_CONFIG: |
-        #--------------------
-        external_url 'https://git.infrastruct.ru'
-        letsencrypt['enable'] = true
-        letsencrypt['contact_emails'] = ['filatof@gmail.com']
-        letsencrypt['auto_renew'] = true
-        nginx['redirect_http_to_https'] = true
-        nginx['listen_https'] = true
-        # Настройки Docker registry
-        registry_external_url 'https://git.infrastruct.ru'
-        gitlab_rails['registry_enabled'] = true
-        gitlab_rails['registry_host'] = 'git.infrastruct.ru'
-        gitlab_rails['registry_port'] = "443"
-        gitlab_rails['registry_path'] = "/var/opt/gitlab/gitlab-rails/shared/registry"
-        registry['env'] = {
-          "REGISTRY_HTTP_RELATIVEURLS" => true
-        }
-        registry['storage'] = {
-          'filesystem' => {
-            'rootdirectory' => '/var/opt/gitlab/gitlab-rails/shared/registry'
-          }
-        }
+- name: Install required Python packages for Docker-compose
+  pip:
+    name: docker-compose
+    state: present
+    executable: pip3 
   become: yes
 
-- name: Wait for GitLab to start
-  wait_for:
-    port: 443
-    host: git.infrastruct.ru
-    timeout: 300
-  become: yes
+- name: Copy docker-compose.yml to the server
+  copy:
+    src: ./docker-compose.yml     
+    dest: /srv/docker-compose.yml
 
-- name: Reconfigure GitLab to enable Let's Encrypt
-  shell: |
-    docker exec -it gitlab gitlab-ctl reconfigure
-  become: yes
+- name: Start GitLab using Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: /srv
+    state: present
+   
