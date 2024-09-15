@@ -1,34 +1,17 @@
-- name: Pull GitLab Runner Docker image
-  docker_image:
-    name: gitlab/gitlab-runner
-    tag: latest
-    source: pull
+- name: Add GitLab Runner repository using official script
+  shell: |
+    curl -L "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh" | sudo bash
   become: yes
 
-- name: Run GitLab Runner Docker container
-  docker_container:
+- name: Install GitLab Runner
+  apt:
     name: gitlab-runner
-    image: gitlab/gitlab-runner:latest
-    volumes:
-      - "/srv/gitlab-runner/config:/etc/gitlab-runner"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    restart_policy: always
-    privileged: yes
-    env:
-      CI_SERVER_URL: "{{ gitlab_url }}"
-      REGISTRATION_TOKEN: "{{ gitlab_runner_token }}"
-      RUNNER_EXECUTOR: "docker"
-      RUNNER_TAG_LIST: "{{ gitlab_runner_tags }}"  
+    state: present
   become: yes
 
-# - name: Register GitLab Runner
-#   shell: |
-#     docker exec -it gitlab-runner gitlab-runner register \
-#       --non-interactive \
-#       --url "{{ gitlab_url }}" \
-#       --registration-token "{{ gitlab_runner_token }}" \
-#       --executor "docker" \
-#       --docker-image "docker:latest" \
-#       --description "infra Docker Runner" \
-#       --tag-list "{{ gitlab_runner_tags }}"
-#   become: yes
+- name: Enable and start GitLab Runner service
+  systemd:
+    name: gitlab-runner
+    enabled: yes
+    state: started
+  become: yes
