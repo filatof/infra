@@ -1,6 +1,6 @@
 # Инструкция по развертыванию инфраструктуры
 
-Этот репозиторий содержит код Terraform для развертывания инфраструктуры (балансировщик и один сервер) и код Ansible для установки Docker и всех зависимостей на сервер.
+Этот репозиторий содержит код Terraform для развертывания инфраструктуры состоящей из балансировщика, сервера для тестов test.infrastruct.ru и собственного gitlab сервера gitlab.infrastruct.ru. В директории ansible находится код для развертывания gitlab сервера и тестового окружения.
 
 ## Содержание
 
@@ -65,15 +65,22 @@
 
 ## Настройка сервера
 
-1. После успешного развертывания инфраструктуры, выполните команду для получения IP-адреса сервера и добавьте его в файл hosts:
+1. После успешного развертывания инфраструктуры, выполните команду для получения IP-адреса сервера и добавьте их в файл hosts:
     ```sh
-    terraform output instance_ips
+    terraform output instance_ips # ip тестового сервера, будет доступен test.infrastruct.ru
+    terraform output instance_gitlab_ips # ip сервера gitlab, будет доступен gitlab.unfrastruct.ru
+    terraform output web_loadbalancer_ip # ip балансировщика проекта, будет доступен web.infrastaruct.ru
     ```
 
 2. Настройте Ansible для выполнения плейбука:
     ```sh
     ansible-playbook -i inventory.ini playbook.yml
     ```
+Playbook состоит из ролей:  
+docker - установит докер и все зависимости  
+gitlab - скачает и установит сервер gitlab. Ключ для root находится в /srv/gitlab/config/initial_root_password  
+gitlab-runner - установит runner. Регистрировать нужно руками, иструкция здесь https://docs.gitlab.com/runner/register/index.html  
+ansible - установит ansible на gitlab сервер, для диплоя собранного сервиса
 
 ## Заключение
 
