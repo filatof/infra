@@ -76,12 +76,23 @@
     ```sh
     ansible-playbook -i inventory.ini playbook.yml
     ```
-Playbook состоит из ролей:  
-docker - установит докер и все зависимости  
-gitlab - скачает и установит сервер gitlab. Ключ для root находится в /srv/gitlab/config/initial_root_password  
-gitlab-runner - установит runner. Регистрировать нужно руками, иструкция здесь https://docs.gitlab.com/runner/register/index.html  
-ansible - установит ansible на gitlab сервер, для диплоя собранного сервиса
+## Playbook состоит из ролей:  
+- docker - установит докер и все зависимости  
+- gitlab - скачает и установит сервер gitlab. Ключ для root находится в /srv/gitlab/config/initial_root_password  
+- gitlab-runner - установит runner. Регистрировать нужно руками, иструкция здесь https://docs.gitlab.com/runner/register/index.html  
 
+После настройки тестовой среды нужно создать пустой проект в вашем gitlab. Скачайте репозиторий https://gitlab.com/filatof/service.git , он содержит файлы пайплайна и диплоя проекта на тестовый сервер, и привяжите к вашему новому проекту на вашем собственном сервере gitlab. Далее нужно замержить проект https://github.com/bhavenger/skillbox-diploma.git в ваш новый проект. Для этого зайдите в директорию с проектом и выполните команды:
+   ```sh
+   git remote add skillbox-diploma https://github.com/bhavenger/skillbox-diploma.git
+   git fetch skillbox-diploma
+   git merge skillbox-diploma/main
+   ```
+После успешного слияния зафиксируйте изменения и отправьте их в ваш собственный удаленный репозиторий:  
+   ```sh
+   git add .
+   git commit -m "Merged skillbox-diploma project into my service project"
+   git push origin main
+   ```
 ## Заключение
 
 После выполнения всех шагов, ваша инфраструктура будет развернута, а на сервере будет установлен Docker и все необходимые зависимости.
