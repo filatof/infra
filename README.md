@@ -69,7 +69,7 @@
     ```sh
     terraform output instance_ips # ip тестового сервера, будет доступен test.infrastruct.ru
     terraform output instance_gitlab_ips # ip сервера gitlab, будет доступен gitlab.unfrastruct.ru
-    terraform output web_loadbalancer_ip # ip балансировщика проекта, будет доступен web.infrastaruct.ru
+    terraform output web_loadbalancer_ip # ip балансировщика проекта, будет доступен infrastaruct.ru
     ```
 
 2. Настройте Ansible для выполнения плейбука:
