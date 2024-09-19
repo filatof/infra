@@ -11,7 +11,7 @@ terraform {
     endpoints = {
       s3 = "https://storage.yandexcloud.net"
     }
-    bucket                   = "test-tfstate-backet"
+    bucket                   = var.bucket
     region                   = "ru-central1"
     key                      = "gitlab.serv"
     shared_credentials_files = ["storage.key"] #ссылка на ключ доступа к бакету
