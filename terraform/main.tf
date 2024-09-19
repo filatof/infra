@@ -11,10 +11,10 @@ terraform {
     endpoints = {
       s3 = "https://storage.yandexcloud.net"
     }
-    bucket                   = "terraform.st"
+    bucket                   = "test-tfstate-backet"
     region                   = "ru-central1"
     key                      = "gitlab.serv"
-    shared_credentials_files = ["di_storage.key"] #ссылка на ключ доступа к бакету
+    shared_credentials_files = ["storage.key"] #ссылка на ключ доступа к бакету
 
     skip_region_validation      = true
     skip_credentials_validation = true
@@ -23,10 +23,10 @@ terraform {
   }
 }
 
-provider "yandex" {
-  service_account_key_file = "di_key.json"
-  cloud_id                 = "b1gko09r3v9oqrjdtl6h"
-  folder_id                = "b1g5f5kb2cvic3d8ql5l"
+provider "yandex" { # все id  пердаем через файл variables.tf
+  service_account_key_file = "key.json"
+  cloud_id                 = var.cloud_id 
+  folder_id                = var.folder_id
   zone                     = "ru-central1-a"
 }
 
@@ -81,19 +81,21 @@ resource "yandex_vpc_security_group" "group1" {
 #-------------определяем группу серверов
 resource "yandex_compute_instance_group" "web-group" {
   name                = "test-ig"
-  service_account_id  = "ajeajhouhlmnh5ekgqgl"
+  service_account_id  = var.service_account_id
   deletion_protection = false
   instance_template {
-    platform_id = "standard-v1"
+    platform_id = "standard-v3"
     name         = "test-{instance.index}" # Присваиваем уникальное имя каждому инстансу в группе
     resources {
       memory        = 2
       cores         = 2
-      #core_fraction = 5
+      core_fraction = 20
     }
     boot_disk {
       mode = "READ_WRITE"
       initialize_params {
+        type     = "network-hdd"
+        size = 10
         image_id = "fd87j6d92jlrbjqbl32q" #ubuntu 22.04
       }
     }
@@ -163,8 +165,8 @@ resource "yandex_lb_network_load_balancer" "web" {
 # диск для gitlab
 resource "yandex_compute_disk" "boot-disk" {
   name     = "disk-vm1"
-  type     = "network-ssd"
-  size     = 20
+  type     = "network-hdd"
+  size     = 15
   image_id = "fd87j6d92jlrbjqbl32q"
   labels = {
     environment = "vm-env-labels"
@@ -174,11 +176,12 @@ resource "yandex_compute_disk" "boot-disk" {
 # инстанс для gitlab
 resource "yandex_compute_instance" "gitlab" {
   name        = "gitlab"
-  platform_id = "standard-v1"
+  platform_id = "standard-v3"
   zone        = "ru-central1-a"
   resources {
     cores         = 2
     memory        = 8
+    core_fraction = 20
   }
   boot_disk {
     disk_id = yandex_compute_disk.boot-disk.id
