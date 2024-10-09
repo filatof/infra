@@ -1,4 +1,6 @@
 ---
 collections:
   - name: ericsysmin.docker
+  - name: grafana.grafana
+  - name: prometheus.prometheus
   

@@ -20,11 +20,31 @@
     - role: gitlab-runner
   tags: gitlab-runner
 
-- name: Install ansible
-  hosts: ansible
+- name: Install Prometheus
+  hosts: prometheus
   become: true
   roles:
-    - role: install_ansible
-  tags: ansible
+    - prometheus
+  tags: prometheus
 
-  
+- name: Install Alertmanager
+  hosts: alertmanager
+  become: true
+  roles:
+    - alertmanager
+  tags: alertmanager
+
+- name: Install Grafana
+  hosts: grafana
+  become: true
+  roles:
+    - grafana
+  tags: grafana
+
+- name: Install Node exporter
+  hosts: all
+  become: true
+  roles:
+    - default_exporters
+  tags: node_exporter
+
