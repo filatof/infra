@@ -70,11 +70,12 @@
     terraform output instance_ips # ip тестового сервера, будет доступен test.infrastruct.ru
     terraform output instance_gitlab_ips # ip сервера gitlab, будет доступен gitlab.unfrastruct.ru
     terraform output web_loadbalancer_ip # ip балансировщика проекта, будет доступен infrastaruct.ru
+    terraform output instance_prometheus_ip # ip prjmetheus и grafana
     ```
 
 2. Настройте Ansible для выполнения плейбука:
     ```sh
-    ansible-playbook -i inventory.ini playbook.yml
+    ansible-playbook  playbooks/playbook.yml
     ```
 ## Playbook состоит из ролей:  
 - docker - установит докер и все зависимости  
@@ -93,6 +94,16 @@
    git commit -m "Merged skillbox-diploma project into my service project"
    git push origin main
    ```
+## Установка мониторинга
+
+Запустите плейбук monitoring.yml 
+   ```sh
+   ansible-playbook playbooks/monitoring.yml
+   ```
+Данный плейбук установит prometheus, grafana, alertmanager и на все инстаный node_exporter
+
+Переправте файл example_user_data.yml под себя. При инициализации инстанса prometheus тераформ установит nginx и настроит обратный прокси на два домена promehteus и grafana
+
 ## Заключение
 
-После выполнения всех шагов, ваша инфраструктура будет развернута, а на сервере будет установлен Docker и все необходимые зависимости.
+После выполнения всех шагов, ваша инфраструктура будет развернута, а на серверах будет установлен Docker, Gitlab и развернут мониторинг.
