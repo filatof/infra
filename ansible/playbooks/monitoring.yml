@@ -1,25 +1,3 @@
----
-- name: Install docker
-  hosts: docker
-  become: true
-  roles:
-    - role: docker
-  tags: docker
-
-- name: Install gitlab
-  hosts: gitlab
-  become: true
-  roles:
-    - role: gitlab
-  tags: gitlab
-
-- name: Install runner
-  hosts: runner
-  become: true
-  roles:
-    - role: gitlab-runner
-  tags: gitlab-runner
-
 - name: Install Prometheus
   hosts: prometheus
   become: true
@@ -47,4 +25,3 @@
   roles:
     - default_exporters
   tags: node_exporter
-
