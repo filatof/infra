@@ -1,0 +1,29 @@
+- name: Create directory
+  file:
+    path: "/etc/alertmanager/"
+    state: directory
+    owner: root
+    group: root
+    mode: '755'
+
+- name: Copy configuration file into a config dir
+  copy:
+    src: "files/alertmanager.yml"
+    dest: "/etc/alertmanager/alertmanager.yml"
+    owner: root
+    group: root
+    mode: '644'
+
+- name: Deploy container
+  community.docker.docker_container:
+    name: "alertmanager"
+    image: "prom/alertmanager"
+    recreate: true
+    restart_policy: always
+    log_driver: "json-file"
+    log_options:
+      max-size: 1G
+    ports:
+      - "9093:9093"
+    volumes:
+      - "/etc/alertmanager:/etc/alertmanager"
