@@ -11,3 +11,4 @@ user_data.sh
 .vscode
 .DS_Store
 user_data*
+*.bak

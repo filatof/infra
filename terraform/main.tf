@@ -190,6 +190,7 @@ resource "yandex_compute_instance" "gitlab" {
   network_interface {
     index     = 1
     subnet_id = yandex_vpc_subnet.subnet-a.id
+    ip_address = "10.2.0.20"
     nat       = true
   }
   metadata = {
@@ -229,8 +230,7 @@ resource "yandex_compute_instance" "prometheus" {
     nat       = true
   }
   metadata = {
-    #ssh-keys = "fill:${file("~/.ssh/id_ed25519.pub")}"
-    user-data = "${file("user_data.yml")}"
+        user-data = "${file("user_data_prometheus.yml")}"
   }
 }
 
