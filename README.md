@@ -103,7 +103,7 @@
    ```
 Данный плейбук установит prometheus, grafana, alertmanager и на все инстаный node_exporter
 
-Переправте файл example_user_data.yml под себя. При инициализации инстанса prometheus тераформ установит nginx и настроит обратный прокси на два домена promehteus и grafana
+Переправте файл example_user_data.yml под себя. При инициализации инстанса prometheus, тераформ установит nginx и настроит обратный прокси на два домена promehteus и grafana
 
 ## Заключение
 
