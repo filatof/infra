@@ -42,6 +42,9 @@ infra/
 │   ├── ansible.cfg
 │   ├── docker-compose.yml
 │   └── hosts
+├── docs/
+│   ├── ladr.md
+│   └── struct_infra.md
 ├── terraform/
 │   ├── example_user_data.yml
 │   ├── main.tf
