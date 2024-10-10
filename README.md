@@ -1,7 +1,58 @@
 # Инструкция по развертыванию инфраструктуры
 
 Этот репозиторий содержит код Terraform для развертывания инфраструктуры состоящей из балансировщика, сервера для тестов test.infrastruct.ru и собственного gitlab сервера gitlab.infrastruct.ru. В директории ansible находится код для развертывания gitlab сервера и тестового окружения.
-
+## Структура проекта
+```bash
+infra/
+├── ansible/
+│   ├── playbooks/ #  папка с плейбуками проекта
+│   │   ├── monitoring.yml 
+│   │   └── playbook.yml
+│   ├── requirements/ 
+│   │   └── requirements.yml
+│   ├── roles/
+│   │   ├── alertmanager/
+│   │   │   ├── files/
+│   │   │   │   └── alertmanager.yml
+│   │   │   └── tasks/
+│   │   │       └── main.yml
+│   │   ├── default_exporters/
+│   │   │   └── tasks/
+│   │   │       └── main.yml
+│   │   ├── docker/
+│   │   │   └── tasks/
+│   │   │       └── main.yml
+│   │   ├── gitlab/
+│   │   │   ├── defaults/
+│   │   │   │   └── main.yml
+│   │   │   ├── tasks/
+│   │   │   │   └── main.yml
+│   │   │   └── templates/
+│   │   │       └── gitlab.rb.j2
+│   │   ├── gitlab-runner/
+│   │   │   ├── defaults/
+│   │   │   │   └── main.yml
+│   │   │   └── tasks/
+│   │   │       └── main.yml
+│   │   ├── grafana/
+│   │   │   └── tasks/
+│   │   │       └── main.yml
+│   │   ├── prometheus/
+│   │   │   ├── tasks/
+│   │   │   │   └── main.yml
+│   │   │   └── templates/
+│   │   │       └── prometheus.yml.j2
+│   ├── ansible.cfg
+│   ├── docker-compose.yml
+│   └── hosts
+├── terraform/
+│   ├── example_user_data.yml
+│   ├── main.tf
+│   └─── sbermain.tf.bak
+├── .gitignore
+├── ladr.md
+└── README.md
+```
 ## Содержание
 
 - [Требования](#требования)
