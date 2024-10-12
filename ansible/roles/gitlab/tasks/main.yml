@@ -20,7 +20,7 @@
 
 - name: Copy docker-compose.yml to the server
   copy:
-    src: ./docker-compose.yml     
+    src: files/docker-compose.yml     
     dest: /srv/docker-compose.yml
 
 - name: Start GitLab using Docker Compose
