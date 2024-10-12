@@ -13,7 +13,7 @@ terraform {
     }
     bucket                   = "terraform.st"
     region                   = "ru-central1"
-    key                      = "infra.serv"
+    key                      = "test-infra.serv"
     shared_credentials_files = ["di_storage.key"] #ссылка на ключ доступа к бакету
 
     skip_region_validation      = true

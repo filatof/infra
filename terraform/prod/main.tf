@@ -13,7 +13,7 @@ terraform {
     }
     bucket                   = "terraform.st"
     region                   = "ru-central1"
-    key                      = "infra.serv"
+    key                      = "prod-infra.serv"
     shared_credentials_files = ["di_storage.key"] #ссылка на ключ доступа к бакету
 
     skip_region_validation      = true
@@ -78,14 +78,15 @@ resource "yandex_vpc_security_group" "group1" {
   }
 }
 
-#-------------определяем группу серверов
+#-------------определяем группу серверов для prodaction
 resource "yandex_compute_instance_group" "web-group" {
-  name                = "test-ig"
+  name                = "prod-ig"
   service_account_id  = var.service_account_id
   deletion_protection = false
   instance_template {
+    hostname = "prod-{instance.index}"
     platform_id = "standard-v3"
-    name         = "test-{instance.index}" # Присваиваем уникальное имя каждому инстансу в группе
+    name         = "prod-{instance.index}" # Присваиваем уникальное имя каждому инстансу в группе
     resources {
       memory        = 2
       cores         = 2
@@ -107,10 +108,7 @@ resource "yandex_compute_instance_group" "web-group" {
 
     metadata = {
       #файл с ключами для доступа на сервер
-      user-data = "${file("user_data_test.yml")}"
-      #ssh-keys = "fill:${file("~/.ssh/id_ed25519.pub")}"
-      #user-data = "${file("user_data.sh")}"
-
+      user-data = "${file("user_data_prod.yml")}"
     }
     network_settings {
       type = "STANDARD"
@@ -162,151 +160,29 @@ resource "yandex_lb_network_load_balancer" "web" {
   }
 }
 
-# диск для gitlab
-resource "yandex_compute_disk" "boot-disk" {
-  name     = "disk-gitlab"
-  type     = "network-hdd"
-  size     = 15
-  image_id = "fd87j6d92jlrbjqbl32q"
-  labels = {
-    environment = "vm-env-labels"
-  }
-}
+# resource "yandex_dns_zone" "example_zone" {
+#   name        = "infrastruct"
+#   description = "my zone dns"
+#   labels = {
+#     label1 = "lable_zone_dns"
+#   }
+#   zone    = "infrastruct.ru."
+#   public  = true
+# }
 
-# инстанс для gitlab
-resource "yandex_compute_instance" "gitlab" {
-  name        = "gitlab"
-  platform_id = "standard-v3"
-  zone        = "ru-central1-a"
-  hostname = "gitlab"
-  resources {
-    cores         = 2
-    memory        = 6
-    core_fraction = 20
-  }
-  boot_disk {
-    disk_id = yandex_compute_disk.boot-disk.id
-  }
-  network_interface {
-    index     = 1
-    subnet_id = yandex_vpc_subnet.subnet-a.id
-    ip_address = "10.2.0.20"
-    nat       = true
-  }
-  metadata = {
-    #ssh-keys = "fill:${file("~/.ssh/id_ed25519.pub")}"
-    user-data = "${file("user_data.yml")}"
-  }
-}
-
-# диск для Prometheus
-resource "yandex_compute_disk" "boot-disk-prometheus" {
-  name     = "disk-prometheus"
-  type     = "network-hdd"
-  size     = 10
-  image_id = "fd87j6d92jlrbjqbl32q"
-  labels = {
-    environment = "vm-env-labels"
-  }
-}
-
-# инстанс для prometheus
-resource "yandex_compute_instance" "prometheus" {
-  name        = "prometheus"
-  platform_id = "standard-v3"
-  zone        = "ru-central1-a"
-  hostname = "prometheus"
-  resources {
-    cores         = 2
-    memory        = 2
-    core_fraction = 20
-  }
-  boot_disk {
-    disk_id = yandex_compute_disk.boot-disk-prometheus.id
-  }
-  network_interface {
-    index     = 1
-    subnet_id = yandex_vpc_subnet.subnet-a.id
-    nat       = true
-  }
-  metadata = {
-        user-data = "${file("user_data_prometheus.yml")}"
-  }
-}
-
-
-resource "yandex_dns_zone" "example_zone" {
-  name        = "infrastruct"
-  description = "my zone dns"
-  labels = {
-    label1 = "lable_zone_dns"
-  }
-  zone    = "infrastruct.ru."
-  public  = true
-}
-
-resource "yandex_dns_recordset" "web" {
+resource "yandex_dns_recordset" "prod" {
   zone_id = yandex_dns_zone.example_zone.id
-  name    = "infrastruct.ru."
+  name    = "prod.infrastruct.ru."
   type    = "A"
   ttl     = 300
   data =  [for listener in yandex_lb_network_load_balancer.web.listener : [for addr in listener.external_address_spec : addr.address if listener.name == "web-listener"][0]]
 }
 
-resource "yandex_dns_recordset" "test" {
-  zone_id = yandex_dns_zone.example_zone.id
-  name    = "test.infrastruct.ru."
-  type    = "A"
-  ttl     = 300
-  data =  [for listener in yandex_lb_network_load_balancer.web.listener : [for addr in listener.external_address_spec : addr.address if listener.name == "web-listener"][0]]
-}
 
-resource "yandex_dns_recordset" "gitlab" {
-  zone_id = yandex_dns_zone.example_zone.id
-  name    = "gitlab.infrastruct.ru."
-  type    = "A"
-  ttl     = 300
-  data =  [yandex_compute_instance.gitlab.network_interface.0.nat_ip_address]
-}
-
-resource "yandex_dns_recordset" "registry" {
-  zone_id = yandex_dns_zone.example_zone.id
-  name    = "registry.gitlab.infrastruct.ru."
-  type    = "A"
-  ttl     = 300
-  data =  [yandex_compute_instance.gitlab.network_interface.0.nat_ip_address]
-}
-
-resource "yandex_dns_recordset" "prometheus" {
-  zone_id = yandex_dns_zone.example_zone.id
-  name    = "prometheus.infrastruct.ru."
-  type    = "A"
-  ttl     = 300
-  data =  [yandex_compute_instance.prometheus.network_interface.0.nat_ip_address]
-}
-
-resource "yandex_dns_recordset" "grafana" {
-  zone_id = yandex_dns_zone.example_zone.id
-  name    = "grafana.infrastruct.ru."
-  type    = "A"
-  ttl     = 300
-  data =  [yandex_compute_instance.prometheus.network_interface.0.nat_ip_address]
-}
-
-
-
-output "web_loadbalancer_ip" {
+output "loadbalancer_ip" {
   value = [for listener in yandex_lb_network_load_balancer.web.listener : [for addr in listener.external_address_spec : addr.address if listener.name == "web-listener"][0]][0]
 }
 
 output "instance_ip" {
   value = [for instance in yandex_compute_instance_group.web-group.instances : instance.network_interface[0].nat_ip_address]
-}
-
-output "instance_gitlab_ip" {
-  value = yandex_compute_instance.gitlab.network_interface.0.nat_ip_address
-}
-
-output "instance_prometheus_ip" {
-  value = yandex_compute_instance.prometheus.network_interface.0.nat_ip_address
 }
