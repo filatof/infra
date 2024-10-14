@@ -2,6 +2,7 @@ terraform {
   required_providers {
     yandex = {
       source = "yandex-cloud/yandex"
+      #version = "0.130.0"
     }
   }
   required_version = ">= 0.13"
@@ -136,7 +137,7 @@ resource "yandex_compute_instance_group" "web-group" {
     target_group_name = "web-target-group"
   }
 }
-
+# -----------network loadbalancer--------------
 resource "yandex_lb_network_load_balancer" "web" {
   name = "my-network-load-balancer"
 
@@ -160,15 +161,15 @@ resource "yandex_lb_network_load_balancer" "web" {
   }
 }
 
-# resource "yandex_dns_zone" "example_zone" {
-#   name        = "infrastruct"
-#   description = "my zone dns"
-#   labels = {
-#     label1 = "lable_zone_dns"
-#   }
-#   zone    = "infrastruct.ru."
-#   public  = true
-# }
+resource "yandex_dns_zone" "example_zone" {
+  name        = "infrastruct"
+  description = "my zone dns"
+  labels = {
+    label1 = "lable_zone_dns"
+  }
+  zone    = "infrastruct.ru."
+  public  = true
+}
 
 resource "yandex_dns_recordset" "prod" {
   zone_id = yandex_dns_zone.example_zone.id

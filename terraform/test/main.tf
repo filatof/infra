@@ -78,102 +78,53 @@ resource "yandex_vpc_security_group" "group1" {
   }
 }
 
-#-------------определяем группу серверов
-resource "yandex_compute_instance_group" "web-group" {
-  name                = "test-ig"
-  service_account_id  = var.service_account_id
-  deletion_protection = false
-  instance_template {
-    platform_id = "standard-v3"
-    name         = "test-{instance.index}" # Присваиваем уникальное имя каждому инстансу в группе
-    resources {
-      memory        = 2
-      cores         = 2
-      core_fraction = 20
-    }
-    boot_disk {
-      mode = "READ_WRITE"
-      initialize_params {
-        type     = "network-hdd"
-        size = 10
-        image_id = "fd87j6d92jlrbjqbl32q" #ubuntu 22.04
-      }
-    }
-    network_interface {
-      network_id = yandex_vpc_network.web-net.id
-      subnet_ids = ["${yandex_vpc_subnet.subnet-a.id}", "${yandex_vpc_subnet.subnet-b.id}"]
-      nat        = true
-    }
-
-    metadata = {
-      #файл с ключами для доступа на сервер
-      user-data = "${file("user_data_test.yml")}"
-      #ssh-keys = "fill:${file("~/.ssh/id_ed25519.pub")}"
-      #user-data = "${file("user_data.sh")}"
-
-    }
-    network_settings {
-      type = "STANDARD"
-    }
-  }
-
-  scale_policy {
-    fixed_scale {
-      size = 1 # пока будет один сервер
-    }
-  }
-
-  allocation_policy {
-    zones = ["ru-central1-a", "ru-central1-b"]
-  }
-
-  deploy_policy {
-    max_unavailable = 1
-    max_creating    = 1
-    max_expansion   = 0
-    max_deleting    = 1
-  }
-
-  load_balancer {
-    target_group_name = "web-target-group"
+#----------------диск для test инстанса
+resource "yandex_compute_disk" "disk-instance" {
+  name     = "disk-instance"
+  type     = "network-hdd"
+  size     = 10
+  image_id = "fd87j6d92jlrbjqbl32q"
+  labels = {
+    environment = "labels-instance"
   }
 }
 
-resource "yandex_lb_network_load_balancer" "web" {
-  name = "my-network-load-balancer"
-
-  listener {
-    name = "web-listener"
-    port = 8080
-    external_address_spec {
-      ip_version = "ipv4"
-    }
+#-------------инстанс для test
+resource "yandex_compute_instance" "test" {
+  name        = "test"
+  platform_id = "standard-v3"
+  zone        = "ru-central1-a"
+  hostname = "test"
+  resources {
+    cores         = 2
+    memory        = 2
+    core_fraction = 20
   }
-
-  attached_target_group {
-    target_group_id = yandex_compute_instance_group.web-group.load_balancer[0].target_group_id
-    healthcheck {
-      name = "http"
-      http_options {
-        port = 8080
-        path = "/"
-      }
-    }
+  boot_disk {
+    disk_id = yandex_compute_disk.disk-instance.id
+  }
+  network_interface {
+    index     = 1
+    subnet_id = yandex_vpc_subnet.subnet-a.id
+    nat       = true
+  }
+  metadata = {
+    user-data = "${file("user_data.yml")}"
   }
 }
 
-# диск для gitlab
+#-----------диск для gitlab
 resource "yandex_compute_disk" "boot-disk" {
   name     = "disk-gitlab"
   type     = "network-hdd"
   size     = 15
   image_id = "fd87j6d92jlrbjqbl32q"
   labels = {
-    environment = "vm-env-labels"
+    environment = "labels-gitlab"
   }
 }
 
-# инстанс для gitlab
+#-----------инстанс для gitlab
 resource "yandex_compute_instance" "gitlab" {
   name        = "gitlab"
   platform_id = "standard-v3"
@@ -199,14 +150,14 @@ resource "yandex_compute_instance" "gitlab" {
   }
 }
 
-# диск для Prometheus
+#-----------диск для Prometheus
 resource "yandex_compute_disk" "boot-disk-prometheus" {
   name     = "disk-prometheus"
   type     = "network-hdd"
   size     = 10
   image_id = "fd87j6d92jlrbjqbl32q"
   labels = {
-    environment = "vm-env-labels"
+    environment = "labels-prometheus"
   }
 }
 
@@ -250,7 +201,7 @@ resource "yandex_dns_recordset" "web" {
   name    = "infrastruct.ru."
   type    = "A"
   ttl     = 300
-  data =  [for listener in yandex_lb_network_load_balancer.web.listener : [for addr in listener.external_address_spec : addr.address if listener.name == "web-listener"][0]]
+  data =  [yandex_compute_instance.test.network_interface.0.nat_ip_address]
 }
 
 resource "yandex_dns_recordset" "test" {
@@ -258,7 +209,7 @@ resource "yandex_dns_recordset" "test" {
   name    = "test.infrastruct.ru."
   type    = "A"
   ttl     = 300
-  data =  [for listener in yandex_lb_network_load_balancer.web.listener : [for addr in listener.external_address_spec : addr.address if listener.name == "web-listener"][0]]
+  data =  [yandex_compute_instance.gitlab.network_interface.0.nat_ip_address]
 }
 
 resource "yandex_dns_recordset" "gitlab" {
@@ -295,18 +246,14 @@ resource "yandex_dns_recordset" "grafana" {
 
 
 
-output "web_loadbalancer_ip" {
-  value = [for listener in yandex_lb_network_load_balancer.web.listener : [for addr in listener.external_address_spec : addr.address if listener.name == "web-listener"][0]][0]
+output "instance_test" {
+  value = yandex_compute_instance.test.network_interface.0.nat_ip_address
 }
 
-output "instance_ip" {
-  value = [for instance in yandex_compute_instance_group.web-group.instances : instance.network_interface[0].nat_ip_address]
-}
-
-output "instance_gitlab_ip" {
+output "instance_gitlab" {
   value = yandex_compute_instance.gitlab.network_interface.0.nat_ip_address
 }
 
-output "instance_prometheus_ip" {
+output "instance_prometheus" {
   value = yandex_compute_instance.prometheus.network_interface.0.nat_ip_address
 }
