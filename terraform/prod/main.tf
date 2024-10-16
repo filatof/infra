@@ -31,53 +31,22 @@ provider "yandex" { # все id  пердаем через файл variables.tf
   zone                     = "ru-central1-a"
 }
 
-#-------------определяем  сеть 
-resource "yandex_vpc_network" "web-net" {
-  name = "EQ-network"
+data "yandex_vpc_network" "EQ-net" {
+  name = "EQ-network"  # Имя существующей сети
 }
 
-#-----------оперделяем подсети в разных зонах 
-resource "yandex_vpc_subnet" "subnet-a" {
-  v4_cidr_blocks = ["10.2.0.0/16"]
-  zone           = "ru-central1-a"
-  network_id     = yandex_vpc_network.web-net.id
+data "yandex_vpc_subnet" "subnet-a" {
+  name = "subnet-a"  # Имя существующей подсети
 }
 
-resource "yandex_vpc_subnet" "subnet-b" {
-  v4_cidr_blocks = ["10.1.0.0/16"]
-  zone           = "ru-central1-b"
-  network_id     = yandex_vpc_network.web-net.id
+data "yandex_vpc_subnet" "subnet-b" {
+  name = "subnet-b"  # Имя второй подсети
 }
 
-#----------security group
-resource "yandex_vpc_security_group" "group1" {
-  name        = "my-security-group"
-  description = "description for my security group"
-  network_id  = yandex_vpc_network.web-net.id
-
-  labels = {
-    my-label = "my-label-value"
-  }
-
-  dynamic "ingress" {
-    for_each = ["22", "80", "443","2222", "3000", "3100", "8080", "9090", "9080", "9093", "9095", "9100", "9113", "9104" ]
-    content {
-      protocol       = "TCP"
-      description    = "rule1 description"
-      v4_cidr_blocks = ["0.0.0.0/0"]
-      from_port      = ingress.value
-      to_port        = ingress.value
-    }
-  }
-
-  egress {
-    protocol       = "ANY"
-    description    = "rule2 description"
-    v4_cidr_blocks = ["0.0.0.0/0"]
-    from_port      = 0
-    to_port        = 65535
-  }
+data "yandex_vpc_security_group" "EQ-sg" {
+  name = "EQ-security-group"  # Имя существующей группы безопасности
 }
+
 
 #-------------определяем группу серверов для prodaction
 resource "yandex_compute_instance_group" "web-group" {
@@ -102,8 +71,8 @@ resource "yandex_compute_instance_group" "web-group" {
       }
     }
     network_interface {
-      network_id = yandex_vpc_network.web-net.id
-      subnet_ids = ["${yandex_vpc_subnet.subnet-a.id}", "${yandex_vpc_subnet.subnet-b.id}"]
+      network_id = data.yandex_vpc_network.EQ-net.id
+      subnet_ids = ["${data.yandex_vpc_subnet.subnet-a.id}", "${data.yandex_vpc_subnet.subnet-b.id}"]
       nat        = true
     }
 
@@ -139,7 +108,7 @@ resource "yandex_compute_instance_group" "web-group" {
 }
 # -----------network loadbalancer--------------
 resource "yandex_lb_network_load_balancer" "web" {
-  name = "my-network-load-balancer"
+  name = "load-balancer"
 
   listener {
     name = "web-listener"
@@ -161,29 +130,22 @@ resource "yandex_lb_network_load_balancer" "web" {
   }
 }
 
-resource "yandex_dns_zone" "example_zone" {
+data "yandex_dns_zone" "example_zone" {
   name        = "infrastruct"
-  description = "my zone dns"
-  labels = {
-    label1 = "lable_zone_dns"
-  }
-  zone    = "infrastruct.ru."
-  public  = true
 }
 
 resource "yandex_dns_recordset" "prod" {
-  zone_id = yandex_dns_zone.example_zone.id
+  zone_id = data.yandex_dns_zone.example_zone.id
   name    = "prod.infrastruct.ru."
   type    = "A"
   ttl     = 300
   data =  [for listener in yandex_lb_network_load_balancer.web.listener : [for addr in listener.external_address_spec : addr.address if listener.name == "web-listener"][0]]
 }
 
-
 output "loadbalancer_ip" {
   value = [for listener in yandex_lb_network_load_balancer.web.listener : [for addr in listener.external_address_spec : addr.address if listener.name == "web-listener"][0]][0]
 }
 
-output "instance_ip" {
+output "prod_ip" {
   value = [for instance in yandex_compute_instance_group.web-group.instances : instance.network_interface[0].nat_ip_address]
 }

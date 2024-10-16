@@ -37,12 +37,14 @@ resource "yandex_vpc_network" "EQ-net" {
 
 #-----------оперделяем подсети в разных зонах 
 resource "yandex_vpc_subnet" "subnet-a" {
+  name = "subnet-a"
   v4_cidr_blocks = ["10.2.0.0/16"]
   zone           = "ru-central1-a"
   network_id     = yandex_vpc_network.EQ-net.id
 }
 
 resource "yandex_vpc_subnet" "subnet-b" {
+  name = "subnet-b"
   v4_cidr_blocks = ["10.1.0.0/16"]
   zone           = "ru-central1-b"
   network_id     = yandex_vpc_network.EQ-net.id
@@ -50,7 +52,7 @@ resource "yandex_vpc_subnet" "subnet-b" {
 
 #----------security group
 resource "yandex_vpc_security_group" "EQ-sg" {
-  name        = "my-security-group"
+  name        = "EQ-security-group"
   description = "description for my security group"
   network_id  = yandex_vpc_network.EQ-net.id
 
