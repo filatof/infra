@@ -31,7 +31,7 @@ provider "yandex" { # все id  пердаем через файл variables.tf
 }
 
 #-------------определяем  сеть 
-resource "yandex_vpc_network" "web-net" {
+resource "yandex_vpc_network" "EQ-net" {
   name = "EQ-network"
 }
 
@@ -39,27 +39,27 @@ resource "yandex_vpc_network" "web-net" {
 resource "yandex_vpc_subnet" "subnet-a" {
   v4_cidr_blocks = ["10.2.0.0/16"]
   zone           = "ru-central1-a"
-  network_id     = yandex_vpc_network.web-net.id
+  network_id     = yandex_vpc_network.EQ-net.id
 }
 
 resource "yandex_vpc_subnet" "subnet-b" {
   v4_cidr_blocks = ["10.1.0.0/16"]
   zone           = "ru-central1-b"
-  network_id     = yandex_vpc_network.web-net.id
+  network_id     = yandex_vpc_network.EQ-net.id
 }
 
 #----------security group
-resource "yandex_vpc_security_group" "group1" {
+resource "yandex_vpc_security_group" "EQ-sg" {
   name        = "my-security-group"
   description = "description for my security group"
-  network_id  = yandex_vpc_network.web-net.id
+  network_id  = yandex_vpc_network.EQ-net.id
 
   labels = {
-    my-label = "my-label-value"
+    my-label = "sg-label"
   }
 
   dynamic "ingress" {
-    for_each = ["22", "80", "443","2222", "3000", "3100", "8080", "9090", "9080", "9093", "9095", "9100", "9113", "9104" ]
+    for_each = ["80", "443","2222", "3000", "3100", "8080", "9090", "9080", "9093", "9095", "9100", "9113", "9104" ]
     content {
       protocol       = "TCP"
       description    = "rule1 description"
@@ -85,7 +85,7 @@ resource "yandex_compute_disk" "disk-instance" {
   size     = 10
   image_id = "fd87j6d92jlrbjqbl32q"
   labels = {
-    environment = "labels-instance"
+    environment = "label-test-instance"
   }
 }
 
@@ -106,6 +106,7 @@ resource "yandex_compute_instance" "test" {
   network_interface {
     index     = 1
     subnet_id = yandex_vpc_subnet.subnet-a.id
+    ip_address = "10.2.0.10"
     nat       = true
   }
   metadata = {
@@ -114,13 +115,13 @@ resource "yandex_compute_instance" "test" {
 }
 
 #-----------диск для gitlab
-resource "yandex_compute_disk" "boot-disk" {
+resource "yandex_compute_disk" "disk-gitlab" {
   name     = "disk-gitlab"
   type     = "network-hdd"
   size     = 15
   image_id = "fd87j6d92jlrbjqbl32q"
   labels = {
-    environment = "labels-gitlab"
+    environment = "label-gitlab"
   }
 }
 
@@ -136,7 +137,7 @@ resource "yandex_compute_instance" "gitlab" {
     core_fraction = 20
   }
   boot_disk {
-    disk_id = yandex_compute_disk.boot-disk.id
+    disk_id = yandex_compute_disk.disk-gitlab.id
   }
   network_interface {
     index     = 1
@@ -151,13 +152,13 @@ resource "yandex_compute_instance" "gitlab" {
 }
 
 #-----------диск для Prometheus
-resource "yandex_compute_disk" "boot-disk-prometheus" {
+resource "yandex_compute_disk" "disk-prometheus" {
   name     = "disk-prometheus"
   type     = "network-hdd"
   size     = 10
   image_id = "fd87j6d92jlrbjqbl32q"
   labels = {
-    environment = "labels-prometheus"
+    environment = "label-prometheus"
   }
 }
 
@@ -173,11 +174,12 @@ resource "yandex_compute_instance" "prometheus" {
     core_fraction = 20
   }
   boot_disk {
-    disk_id = yandex_compute_disk.boot-disk-prometheus.id
+    disk_id = yandex_compute_disk.disk-prometheus.id
   }
   network_interface {
     index     = 1
     subnet_id = yandex_vpc_subnet.subnet-a.id
+    ip_address = "10.2.0.30"
     nat       = true
   }
   metadata = {
@@ -209,7 +211,7 @@ resource "yandex_dns_recordset" "test" {
   name    = "test.infrastruct.ru."
   type    = "A"
   ttl     = 300
-  data =  [yandex_compute_instance.gitlab.network_interface.0.nat_ip_address]
+  data =  [yandex_compute_instance.test.network_interface.0.nat_ip_address]
 }
 
 resource "yandex_dns_recordset" "gitlab" {
@@ -246,14 +248,14 @@ resource "yandex_dns_recordset" "grafana" {
 
 
 
-output "instance_test" {
+output "test_ip" {
   value = yandex_compute_instance.test.network_interface.0.nat_ip_address
 }
 
-output "instance_gitlab" {
+output "gitlab_ip" {
   value = yandex_compute_instance.gitlab.network_interface.0.nat_ip_address
 }
 
-output "instance_prometheus" {
+output "prometheus_ip" {
   value = yandex_compute_instance.prometheus.network_interface.0.nat_ip_address
 }
