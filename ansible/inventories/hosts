@@ -1,28 +1,32 @@
 
 gitlab ansible_host=89.169.147.218 ansible_port=2222 ansible_user='fill' ansible_ssh_private_key_file='/Users/fill/.ssh/id_ed25519' 
-prometheus ansible_host=89.169.157.200 ansible_port=2222 ansible_user='fill' ansible_ssh_private_key_file='/Users/fill/.ssh/id_ed25519'
+monitoring ansible_host=89.169.157.200 ansible_port=2222 ansible_user='fill' ansible_ssh_private_key_file='/Users/fill/.ssh/id_ed25519'
 test ansible_host=158.160.7.168 ansible_port=2222 ansible_user='fill' ansible_ssh_private_key_file='/Users/fill/.ssh/id_ed25519'
+prod ansible_host=158.160.7.168 ansible_port=2222 ansible_user='fill' ansible_ssh_private_key_file='/Users/fill/.ssh/id_ed25519'
 
 
 [docker]
-gitlab 
+gitlab
+monitoring 
 test
-prometheus
+prod
+
 
 [runner]
 gitlab
 
 [prometheus]
-prometheus
+monitoring
 
 [alertmanager]
-prometheus
+monitoring
 
 [node_exporter]
-prometheus
+monitoring
 gitlab
 test
+prod
 
 [grafana]
-prometheus
+monitoring
 
