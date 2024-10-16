@@ -9,24 +9,26 @@ scrape_configs:
   scrape_interval: 5s
   static_configs:
   - targets:
-    - '{{ hostvars["prometheus"].ansible_host }}:9090'
+    - '{{ hostvars["monitoring"].ansible_host }}:9090'
 
 - job_name: 'node_exporter'
   scrape_interval: 5s
   static_configs:
   - targets:
-    - '{{ hostvars["prometheus"].ansible_host }}:9100'
+    - '{{ hostvars["monitoring"].ansible_host }}:9100'
     - '{{ hostvars["gitlab"].ansible_host }}:9100'
     - '{{ hostvars["test"].ansible_host }}:9100'
+    - '{{ hostvars["prod"].ansible_host }}:9100'
 
 - job_name: 'service'
   scrape_interval: 5s
   static_configs:
   - targets:
     - '{{ hostvars["test"].ansible_host }}:8080'
+    - '{{ hostvars["prod"].ansible_host }}:8080'
 
 alerting:
   alertmanagers:
   - static_configs:
     - targets:
-      - '{{ hostvars["prometheus"].ansible_host }}:9093'
+      - '{{ hostvars["monitoring"].ansible_host }}:9093'
