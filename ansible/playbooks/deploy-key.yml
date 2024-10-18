@@ -1,0 +1,45 @@
+---
+- name: Generate and distribute SSH keys
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Generate ed25519 SSH key pair
+      ansible.builtin.command:
+        cmd: "ssh-keygen -t ed25519 -f ~/.ssh/gitlab_runner -N ''"
+      args:
+        creates: ~/.ssh/gitlab_runner  
+
+    - name: Copy private key to GitLab
+      ansible.builtin.copy:
+        src: ~/.ssh/gitlab_runner
+        dest: /home/gitlab-runner/.ssh/gitlab_runner
+        owner: gitlab-runner
+        mode: '0600'
+      delegate_to: gitlab
+      become: true
+
+    - name: Copy public key to GitLab
+      ansible.builtin.copy:
+        src: ~/.ssh/gitlab_runner.pub
+        dest: /home/gitlab-runner/.ssh/gitlab_runner.pub
+        owner: gitlab-runner
+        mode: '0644'
+      delegate_to: gitlab
+      become: true
+
+- name: Distribute public key to test and prod servers
+  hosts: key-setup
+  gather_facts: no
+  tasks:
+    - name: Ensure .ssh directory exists
+      ansible.builtin.file:
+        path: ~/.ssh
+        state: directory
+        mode: '0700'
+
+    - name: Add public key to authorized_keys
+      ansible.builtin.lineinfile:
+        path: ~/.ssh/authorized_keys
+        line: "{{ lookup('file', '~/.ssh/gitlab_runner.pub') }}"
+        create: yes
+        mode: '0600'
