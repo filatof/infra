@@ -120,7 +120,7 @@ resource "yandex_compute_instance" "test" {
 resource "yandex_compute_disk" "disk-gitlab" {
   name     = "disk-gitlab"
   type     = "network-hdd"
-  size     = 15
+  size     = 30
   image_id = "fd87j6d92jlrbjqbl32q"
   labels = {
     environment = "label-gitlab"
