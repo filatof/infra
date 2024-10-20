@@ -21,6 +21,12 @@
         group: gitlab-runner
         mode: '0700'
       become: true
+    
+    - name: User 'gitlab-runnet' appending the group 'docker' 
+      ansible.builtin.user:
+        name: gitlab-runner
+        groups: docker
+        append: yes
 
     - name: Copy private key to GitLab
       ansible.builtin.copy:
