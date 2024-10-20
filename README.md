@@ -79,12 +79,13 @@
 
 2. Настройте Ansible для выполнения плейбука:
     ```sh
-    ansible-playbook  playbooks/playbook.yml
+    ansible-playbook  playbooks/infrastruct.yml
     ```
 ## Playbook состоит из ролей:  
 - docker - установит докер и все зависимости  
 - gitlab - скачает и установит сервер gitlab. Ключ для root находится в /srv/gitlab/config/initial_root_password  
-- gitlab-runner - установит runner. Регистрировать нужно руками, иструкция здесь https://docs.gitlab.com/runner/register/index.html  
+- gitlab-runner - установит runner. Регистрировать нужно руками, иструкция здесь https://docs.gitlab.com/runner/register/index.html 
+- prometheus - установит prometheus, alertmanager, grafana
 
 После настройки тестовой среды нужно создать пустой проект в вашем gitlab. Скачайте репозиторий https://gitlab.com/filatof/service.git , он содержит файлы пайплайна и диплоя проекта на тестовый сервер, и привяжите к вашему новому проекту на вашем собственном сервере gitlab. Далее нужно замержить проект https://github.com/bhavenger/skillbox-diploma.git в ваш новый проект. Для этого зайдите в директорию с проектом и выполните команды:
    ```sh
