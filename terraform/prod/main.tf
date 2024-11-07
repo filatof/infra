@@ -97,9 +97,7 @@ resource "yandex_compute_instance_group" "web-group" {
 
   deploy_policy {
     max_unavailable = 1
-    max_creating    = 1
     max_expansion   = 0
-    max_deleting    = 1
   }
 
   load_balancer {

@@ -1,4 +1,4 @@
-
+venv
 .terraform
 *.tfstate
 *.tfstate.backup
@@ -12,3 +12,4 @@ user_data.sh
 .DS_Store
 user_data*
 *.bak
+.idea
