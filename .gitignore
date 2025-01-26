@@ -14,3 +14,6 @@ user_data.sh
 user_data*
 *.bak
 .idea
+.terraform.lock.hcl
+change_hostname.yml
+hosts
