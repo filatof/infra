@@ -1,4 +1,5 @@
 venv
+*.tfvars
 .terraform
 *.tfstate
 *.tfstate.backup
