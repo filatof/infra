@@ -1,0 +1,9 @@
+[consul_instances]
+server1 ansible_host=192.168.1.51  consul_bind_address=192.168.1.51 consul_client_address="192.168.1.51 127.0.0.1" consul_node_role=server consul_bootstrap_expect=true consul_acl_policy=true consul_acl_enable=true ansible_user=fill
+server2 ansible_host=192.168.1.52  consul_bind_address=192.168.1.52 consul_client_address="192.168.1.52 127.0.0.1" consul_node_role=server consul_bootstrap_expect=true consul_acl_policy=true consul_acl_enable=true ansible_user=fill
+server3 ansible_host=192.168.1.53  consul_bind_address=192.168.1.53 consul_client_address="192.168.1.53 127.0.0.1" consul_node_role=server consul_bootstrap_expect=true consul_acl_policy=true consul_acl_enable=true ansible_user=fill
+node1 ansible_host=192.168.1.54 consul_bind_address=192.168.1.54 consul_client_address="192.168.1.54 127.0.0.1" consul_node_role=client consul_enable_local_script_checks=true ansible_user=fill
+node2 ansible_host=192.168.1.55 consul_bind_address=192.168.1.55 consul_client_address="192.168.1.55 127.0.0.1" consul_node_role=client consul_enable_local_script_checks=true ansible_user=fill
+node3 ansible_host=192.168.1.56 consul_bind_address=192.168.1.56 consul_client_address="192.168.1.56 127.0.0.1" consul_node_role=client consul_enable_local_script_checks=true ansible_user=fill
+node4 ansible_host=192.168.1.57 consul_bind_address=192.168.1.57 consul_client_address="192.168.1.57 127.0.0.1" consul_node_role=client consul_enable_local_script_checks=true ansible_user=fill
+node5 ansible_host=192.168.1.58 consul_bind_address=192.168.1.58 consul_client_address="192.168.1.58 127.0.0.1" consul_node_role=client consul_enable_local_script_checks=true ansible_user=fill
