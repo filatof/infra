@@ -17,3 +17,4 @@ user_data*
 .terraform.lock.hcl
 change_hostname.yml
 hosts
+terraform/test/proxmox/ansible.cfg
