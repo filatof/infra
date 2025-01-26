@@ -18,4 +18,4 @@ user_data*
 change_hostname.yml
 hosts
 terraform/test/proxmox/ansible.cfg
-roles/ansible-consul/
+ansible/roles/ansible-consul/
