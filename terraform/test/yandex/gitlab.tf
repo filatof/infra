@@ -30,7 +30,6 @@ resource "yandex_compute_instance" "gitlab" {
     nat       = true
   }
   metadata = {
-    #ssh-keys = "fill:${file("~/.ssh/id_ed25519.pub")}"
     user-data = "${file("user_data.yml")}"
   }
 }

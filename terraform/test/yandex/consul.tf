@@ -37,5 +37,4 @@ resource "yandex_compute_instance" "consul" {
     enable-monitoring-agent = "true"
   }
 
-  service_account_id = "ajenq1pl8j49l4tr693g"
 }
