@@ -1,84 +1,3 @@
-terraform {
-  required_providers {
-    yandex = {
-      source = "yandex-cloud/yandex"
-    }
-  }
-  required_version = ">= 0.13"
-
-  #---------загрузка файла состояний в s3-------------
-  backend "s3" {
-    endpoints = {
-      s3 = "https://storage.yandexcloud.net"
-    }
-    bucket                   = "terraform.st"
-    region                   = "ru-central1"
-    key                      = "test-infra.serv"
-    shared_credentials_files = ["di_storage.key"] #ссылка на ключ доступа к бакету
-
-    skip_region_validation      = true
-    skip_credentials_validation = true
-    skip_requesting_account_id  = true 
-    skip_s3_checksum            = true 
-  }
-}
-
-provider "yandex" { # все id  пердаем через файл variables.tf
-  service_account_key_file = "di_key.json"
-  cloud_id                 = var.cloud_id 
-  folder_id                = var.folder_id
-  zone                     = "ru-central1-a"
-}
-
-#-------------определяем  сеть 
-resource "yandex_vpc_network" "EQ-net" {
-  name = "EQ-network"
-}
-
-#-----------оперделяем подсети в разных зонах 
-resource "yandex_vpc_subnet" "subnet-a" {
-  name = "subnet-a"
-  v4_cidr_blocks = ["10.2.0.0/16"]
-  zone           = "ru-central1-a"
-  network_id     = yandex_vpc_network.EQ-net.id
-}
-
-resource "yandex_vpc_subnet" "subnet-b" {
-  name = "subnet-b"
-  v4_cidr_blocks = ["10.1.0.0/16"]
-  zone           = "ru-central1-b"
-  network_id     = yandex_vpc_network.EQ-net.id
-}
-
-#----------security group
-resource "yandex_vpc_security_group" "EQ-sg" {
-  name        = "EQ-security-group"
-  description = "description for my security group"
-  network_id  = yandex_vpc_network.EQ-net.id
-
-  labels = {
-    my-label = "sg-label"
-  }
-
-  dynamic "ingress" {
-    for_each = ["80", "443","2222", "3000", "3100", "8080", "9090", "9080", "9093", "9095", "9100", "9113", "9104" ]
-    content {
-      protocol       = "TCP"
-      description    = "rule1 description"
-      v4_cidr_blocks = ["0.0.0.0/0"]
-      from_port      = ingress.value
-      to_port        = ingress.value
-    }
-  }
-
-  egress {
-    protocol       = "ANY"
-    description    = "rule2 description"
-    v4_cidr_blocks = ["0.0.0.0/0"]
-    from_port      = 0
-    to_port        = 65535
-  }
-}
 
 #----------------диск для test инстанса
 resource "yandex_compute_disk" "disk-instance" {
@@ -190,15 +109,7 @@ resource "yandex_compute_instance" "prometheus" {
 }
 
 
-resource "yandex_dns_zone" "example_zone" {
-  name        = "infrastruct"
-  description = "my zone dns"
-  labels = {
-    label1 = "lable_zone_dns"
-  }
-  zone    = "infrastruct.ru."
-  public  = true
-}
+
 
 resource "yandex_dns_recordset" "web" {
   zone_id = yandex_dns_zone.example_zone.id
@@ -216,21 +127,9 @@ resource "yandex_dns_recordset" "test" {
   data =  [yandex_compute_instance.test.network_interface.0.nat_ip_address]
 }
 
-resource "yandex_dns_recordset" "gitlab" {
-  zone_id = yandex_dns_zone.example_zone.id
-  name    = "gitlab.infrastruct.ru."
-  type    = "A"
-  ttl     = 300
-  data =  [yandex_compute_instance.gitlab.network_interface.0.nat_ip_address]
-}
 
-resource "yandex_dns_recordset" "registry" {
-  zone_id = yandex_dns_zone.example_zone.id
-  name    = "registry.gitlab.infrastruct.ru."
-  type    = "A"
-  ttl     = 300
-  data =  [yandex_compute_instance.gitlab.network_interface.0.nat_ip_address]
-}
+
+
 
 resource "yandex_dns_recordset" "prometheus" {
   zone_id = yandex_dns_zone.example_zone.id
