@@ -23,13 +23,13 @@ resource "local_file" "ansible_inventory" {
     ${join("\n", [for i in yandex_compute_instance.consul : i.network_interface[0].nat_ip_address])}
 
     [gitlab]
-    ${yandex_compute_instance.gitlab.network_interface.0.ip_address}
+    ${yandex_compute_instance.gitlab.network_interface.0.nat_ip_address}
 
     [prometheus]
-    ${yandex_compute_instance.prometheus.network_interface.0.ip_address}
+    ${yandex_compute_instance.prometheus.network_interface.0.nat_ip_address}
 
     [test]
-    ${yandex_compute_instance.test.network_interface.0.ip_address}
+    ${yandex_compute_instance.test.network_interface.0.nat_ip_address}
   EOT
   filename = "${path.module}/../../../ansible/inventories/yandex.ini"
 }
