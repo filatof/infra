@@ -32,7 +32,7 @@ resource "yandex_compute_instance" "consul" {
   }
 
   metadata = {
-    user-data = file("metafile.yml")
+    user-data = "${file("user_data.yml")}"
     serial-port-enable     = "true"
     enable-monitoring-agent = "true"
   }
