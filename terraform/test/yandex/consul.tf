@@ -3,7 +3,7 @@ resource "yandex_compute_image" "ubuntu_2004" {
 }
 
 resource "yandex_compute_disk" "disk_consul" {
-  count = 3
+  count = var.consul
   name     = "boot-disk-${count.index + 1}"
   type     = "network-hdd"
   zone     = "ru-central1-a"
@@ -12,7 +12,7 @@ resource "yandex_compute_disk" "disk_consul" {
 }
 
 resource "yandex_compute_instance" "consul" {
-  count = 3
+  count = var.consul
   name = "consul${count.index + 1}"
   hostname = "consul${count.index + 1}"
   resources {
@@ -27,6 +27,7 @@ resource "yandex_compute_instance" "consul" {
 
   network_interface {
     subnet_id = yandex_vpc_subnet.subnet-a.id
+    ip_address = "192.168.10.${40 + count.index + 1}"
     nat       = true
   }
 
@@ -37,25 +38,4 @@ resource "yandex_compute_instance" "consul" {
   }
 
   service_account_id = "ajenq1pl8j49l4tr693g"
-}
-
-
-###############################
-resource "yandex_dns_zone" "zone_ru" {
-  name        = "infrastruct-ru"
-  description = "my dns"
-  labels = {
-    label1 = "lable_zone_dns_ru"
-  }
-  zone    = "infrastruct.online."
-  public  = true
-}
-
-resource "yandex_dns_recordset" "record" {
-  count = 1
-  zone_id = yandex_dns_zone.zone_ru.id
-  name    = "server${count.index + 1}.infrastruct.online."
-  type    = "A"
-  ttl     = 300
-  data    = [yandex_compute_instance.server[count.index].network_interface[0].nat_ip_address]
 }

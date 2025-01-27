@@ -47,7 +47,7 @@ infra/
 │   └── struct_infra.md
 ├── terraform/
 │   ├── example_user_data.yml
-│   └── main.tf
+│   └── vm.tf
 ├── .gitignore
 ├── ladr.md
 └── README.md
