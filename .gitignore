@@ -20,3 +20,4 @@ hosts
 terraform/test/proxmox/ansible.cfg
 ansible/roles/ansible-consul/
 metafile.yml
+user_data_prometheus.yml
