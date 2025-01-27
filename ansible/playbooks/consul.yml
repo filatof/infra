@@ -1,7 +1,7 @@
 ---
 - name: Create consul cluster
   become: true
-  hosts: consul_cluster
+  hosts: consul_clusters
   roles:
     - ansible-consul
   tags: consul
