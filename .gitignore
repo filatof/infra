@@ -19,3 +19,4 @@ change_hostname.yml
 hosts
 terraform/test/proxmox/ansible.cfg
 ansible/roles/ansible-consul/
+metafile.yml
