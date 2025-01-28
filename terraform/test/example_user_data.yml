@@ -8,7 +8,7 @@ users:
    sudo: 'ALL=(ALL) NOPASSWD:ALL'
    shell: /bin/bash  
    ssh_authorized_keys:  
-   - ssh-ed25519 AAAAC3NzaC1lZDI1NTEBBBAIL+O6cXczlSLnL0wZSMe6qRNKpfbdiG6BtYwCmvi5ctR user_name@Macmini.local
+   - ssh-ed25519 AAAAC3NzaC1lZDI1NTEBBBAIL+O6cXczlSLnqRNKpfbdiG6BtYwCmvi5ctR user_name@Macmini.local
    
 packages:
    - nginx
