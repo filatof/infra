@@ -1,27 +1,27 @@
 - name: Install Prometheus
-  hosts: prometheus
+  hosts: monitoring
   become: true
   roles:
     - prometheus
   tags: prometheus
 
-- name: Install Alertmanager
-  hosts: alertmanager
-  become: true
-  roles:
-    - alertmanager
-  tags: alertmanager
+#- name: Install Alertmanager
+#  hosts: monitoring
+#  become: true
+#  roles:
+#    - alertmanager
+#  tags: alertmanager
 
-- name: Install Grafana
-  hosts: grafana
-  become: true
-  roles:
-    - grafana
-  tags: grafana
+#- name: Install Grafana
+#  hosts: monitoring
+#  become: true
+#  roles:
+#    - grafana
+#  tags: grafana
 
 - name: Install Node exporter
   hosts: all
   become: true
   roles:
-    - default_exporters
+    - node-exporter
   tags: node_exporter
