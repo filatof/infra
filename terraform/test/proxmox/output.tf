@@ -29,8 +29,8 @@ resource "local_file" "ansible_inventory" {
   content = join("\n", [
     for i in range(8) : format(
       "%s ansible_host=192.168.1.%d ansible_user=fill ansible_port=22 ansible_private_key_file=/Users/fill/.ssh/id_ed25519",
-      i < 3 ? "server${i + 1}" : "node${i - 2}", # Логика для имен
-      i + 51                                     # Логика для IP-адресов
+      i < 3 ? "server${i + 1}" : "node${i - 2}",
+      i + 51
     )
   ])
 }
