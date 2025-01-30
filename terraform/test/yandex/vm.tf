@@ -2,7 +2,7 @@
 #----------------диск для test инстанса
 resource "yandex_compute_disk" "disk-instance" {
   count = var.vm_test
-  name     = "disk-instance"
+  name     = "disk-instance-${count.index + 1}"
   type     = "network-hdd"
   size     = 10
   image_id = "fd87j6d92jlrbjqbl32q"
@@ -14,8 +14,8 @@ resource "yandex_compute_disk" "disk-instance" {
 #-------------инстанс для test
 resource "yandex_compute_instance" "test" {
   count = var.vm_test
-  name = "test_vm${count.index + 1}"
-  hostname = "test_vm${count.index + 1}"
+  name = "test-vm${count.index + 1}"
+  hostname = "test-vm-${count.index + 1}"
   platform_id = "standard-v3"
   zone        = "ru-central1-a"
   resources {
@@ -24,12 +24,11 @@ resource "yandex_compute_instance" "test" {
     core_fraction = 20
   }
   boot_disk {
-    disk_id = yandex_compute_disk.disk-instance.id
+    disk_id = yandex_compute_disk.disk-instance[count.index].id
   }
   network_interface {
     index     = 1
     subnet_id = yandex_vpc_subnet.subnet-a.id
-    ip_address = "192.168.10.10"
     ip_address = "192.168.10.${10 + count.index + 1}"
     nat       = true
   }

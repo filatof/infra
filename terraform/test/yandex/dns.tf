@@ -55,11 +55,12 @@ resource "yandex_dns_recordset" "grafana" {
 
 #-----------test instances
 resource "yandex_dns_recordset" "test" {
+  count = var.vm_test
   zone_id = yandex_dns_zone.zone_ru.id
-  name    = "test.infrastruct.ru."
+  name    = "test-${count.index + 1}.infrastruct.ru."
   type    = "A"
   ttl     = 300
-  data =  [yandex_compute_instance.test.network_interface.0.nat_ip_address]
+  data    = [yandex_compute_instance.test[count.index].network_interface[0].nat_ip_address]
 }
 
 
