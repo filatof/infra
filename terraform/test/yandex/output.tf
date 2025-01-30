@@ -14,7 +14,7 @@ output "prometheus_ip" {
 
 #---------------test instances
 output "test_ip" {
-  value = yandex_compute_instance.test.network_interface.0.nat_ip_address
+  value = [for i in yandex_compute_instance.test : i.network_interface[0].nat_ip_address]
 }
 #-------------Create inventory file
 resource "local_file" "ansible_inventory" {

@@ -13,6 +13,7 @@ resource "yandex_compute_disk" "disk_consul" {
 
 resource "yandex_compute_instance" "consul" {
   count = var.consul
+  platform_id = "standard-v3"
   name = "consul${count.index + 1}"
   hostname = "consul${count.index + 1}"
   resources {
