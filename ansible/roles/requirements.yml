@@ -3,3 +3,13 @@
   name: ansible-consul
   scm: git
   version: master
+
+- src: https://github.com/filatof/node-exporter-ansible-role.git
+  name: node-exporter
+  scm: git
+  version: main
+
+- src: https://github.com/filatof/prometheus-ansible-role.git
+  name: prometheus
+  scm: git
+  version: main
