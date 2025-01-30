@@ -19,5 +19,7 @@ change_hostname.yml
 hosts
 terraform/test/proxmox/ansible.cfg
 ansible/roles/ansible-consul/
+ansible/roles/node-exporter/
+ansible/roles/prometheus/
 metafile.yml
 user_data_prometheus.yml

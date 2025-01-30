@@ -1,7 +1,0 @@
-- name: Deploy node_exporter
-  community.docker.docker_container:
-    name: "node_exporter"
-    image: "prom/node-exporter:latest"
-    restart_policy: always
-    ports:
-      - "9100:9100"
