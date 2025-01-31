@@ -3,7 +3,7 @@ resource "proxmox_virtual_environment_vm" "prometheus" {
   name        = format("prometheus-%02d", count.index + 1)
   migrate     = true
   description = "Managed by OpenTofu"
-  tags        = ["opentofu", "teststage"]
+  tags        = ["teststage"]
   on_boot     = true
   vm_id     = format("32%02d", count.index + 4)
 

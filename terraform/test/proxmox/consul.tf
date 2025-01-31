@@ -1,10 +1,9 @@
-
 resource "proxmox_virtual_environment_vm" "consul" {
-  count       = 3
+  count       = var.consul-vm
   name        = format("consul-%02d", count.index + 1)
   migrate     = true
   description = "Managed by OpenTofu"
-  tags        = ["opentofu", "teststage"]
+  tags        = ["teststage", "consul"]
   on_boot     = true
   vm_id     = format("32%02d", count.index + 1)
 

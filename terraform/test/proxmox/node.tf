@@ -1,16 +1,11 @@
-variable "vm_count" {
-  description = "Number of VMs to create"
-  default     = 4
-}
-
 resource "proxmox_virtual_environment_vm" "node" {
-  count       = var.vm_count
+  count       = var.test-vm
   name        = format("node-%02d", count.index + 1)
   migrate     = true
   description = "Managed by OpenTofu"
-  tags        = ["opentofu", "teststage"]
+  tags        = ["teststage"]
   on_boot     = true
-  vm_id     = format("32%02d", count.index + 5)
+  vm_id     = format("32%02d", count.index + 6)
 
   node_name = "pimox2"
 
@@ -54,7 +49,7 @@ resource "proxmox_virtual_environment_vm" "node" {
     ip_config {
       ipv4 {
         #address = "dhcp"
-        address = format("192.168.1.%d/24", count.index + 55)
+        address = format("192.168.1.%d/24", count.index + 56)
         gateway = "192.168.1.1"
       }
     }
