@@ -11,7 +11,7 @@ terraform {
     }
     bucket = "terraform-state-standart"
     region = "ru-central1"
-    key    = "consul-cluster.tfstate"
+    key    = "test-stage.tfstate"
     shared_credentials_files = [ "storage.key" ]
     skip_region_validation      = true
     skip_credentials_validation = true
