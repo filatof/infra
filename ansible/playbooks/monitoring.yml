@@ -5,19 +5,46 @@
     - prometheus
   tags: prometheus
 
-#- name: Install Alertmanager
-#  hosts: monitoring
-#  become: true
-#  roles:
-#    - alertmanager
-#  tags: alertmanager
+- name: Install Alertmanager
+  hosts: monitoring
+  become: true
+  roles:
+    - prometheus.prometheus.alertmanager
+  vars:
+    alertmanager_slack_api_url: "http://example.com"
+    alertmanager_receivers:
+      - name: slack
+        slack_configs:
+          - send_resolved: true
+            channel: '#alerts'
+    alertmanager_route:
+      group_by: [ 'alertname', 'cluster', 'service' ]
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 3h
+      receiver: slack
+  tags: alertmanager
 
-#- name: Install Grafana
-#  hosts: monitoring
-#  become: true
-#  roles:
-#    - grafana
-#  tags: grafana
+- name: Install Grafana
+  hosts: monitoring
+  become: true
+  roles:
+    - grafana.grafana.grafana
+  vars:
+    grafana_ini: "{{ grafana_ini_default | default({}) }}"
+    grafana_ini.security.admin_password: "qwerty"
+  tags: grafana
+- name: Install Grafana
+  hosts: monitoring
+  become: true
+  roles:
+    - grafana.grafana.grafana
+  vars:
+    grafana_ini:
+      security:
+        admin_user: admin
+        admin_password: "qwerty"
+  tags: grafana
 
 - name: Install Node exporter
   hosts: all

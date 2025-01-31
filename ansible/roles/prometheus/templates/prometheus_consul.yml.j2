@@ -1,0 +1,29 @@
+{{ ansible_managed | comment }}
+
+global:
+  scrape_interval: {{ scrape_interval | default('15s') }}
+  scrape_timeout: {{ scrape_timeout | default('10s') }}
+  evaluation_interval: {{ evaluation_interval | default('15s') }}
+
+remote_write:
+  - url: "{{ remote_write_url | default('http://localhost:8428/api/v1/write') }}"
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets:
+        - {{ prometheus_target | default('192.168.10.30:9090') }}
+
+  - job_name: consul
+    honor_labels: true
+    consul_sd_configs:
+      - server: '{{ consul_server | default('127.0.0.1:8500') }}'
+        datacenter: '{{ consul_datacenter | default('dc1') }}'
+        scheme: http
+        services:
+          - node-exporter
+    relabel_configs:
+      - source_labels: [ __address__ ]
+        target_label: __param_target
+      - target_label: instance
+        replacement: "${1}"
