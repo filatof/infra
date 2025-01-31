@@ -31,15 +31,6 @@
   roles:
     - grafana.grafana.grafana
   vars:
-    grafana_ini: "{{ grafana_ini_default | default({}) }}"
-    grafana_ini.security.admin_password: "qwerty"
-  tags: grafana
-- name: Install Grafana
-  hosts: monitoring
-  become: true
-  roles:
-    - grafana.grafana.grafana
-  vars:
     grafana_ini:
       security:
         admin_user: admin
