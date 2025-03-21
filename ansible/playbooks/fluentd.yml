@@ -1,0 +1,37 @@
+- hosts: 192.168.1.91
+  gather_facts: true
+  become: true
+  vars:
+    fluentd_version: 5
+    fluentd_lts: true
+    #fluentd_service_name: td-agent
+    fluentd_service_state: started
+    fluentd_service_enabled: true
+    fluentd_plugins:
+      - fluent-plugin-elasticsearch
+    fluentd_conf_sources: |
+      <source>
+        @type forward
+        port 24224
+        bind 0.0.0.0
+      </source>
+      <match docker.**>
+          @type elasticsearch
+          host localhost
+          port 9200
+          scheme https
+          ssl_verify false
+          index_name fluentd-docker
+          logstash_format true
+          logstash_prefix fluentd
+          logstash_dateformat %Y%m%d
+          include_tag_key true
+          type_name access_log
+          tag_key @log_name
+          flush_interval 10s
+          user elastic   
+          password *********** 
+      </match>
+  roles:
+    - ansible-role-fluentd
+
