@@ -1,6 +1,6 @@
 ---
 - name: Install docker
-  hosts: docker
+  hosts: server3, test-vm1
   become: true
   roles:
     - role: docker
@@ -10,11 +10,11 @@
   hosts: gitlab
   become: true
   roles:
-    - role: gitlab
+    - roles: gitlab
   tags: gitlab
 
 - name: Install runner
-  hosts: runner
+  hosts: server3
   become: true
   roles:
     - role: gitlab-runner
