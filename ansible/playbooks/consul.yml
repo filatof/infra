@@ -7,3 +7,30 @@
   roles:
     - ansible-consul
   tags: consul
+
+- name: Сохранение ACL токена и ключа шифрования в Consul KV
+  hosts: server1
+  become: true
+  tasks:
+    - name: Записать ACL токен в Consul KV
+      ansible.builtin.uri:
+        url: "http://{{ ansible_default_ipv4.address }}:8500/v1/kv/secrets/acl_token"
+        method: PUT
+        body: "{{ consul_acl_master_token }}"
+        headers:
+          X-Consul-Token: "{{ consul_acl_master_token }}"
+        status_code: 200,201
+        body_format: raw
+      when: consul_acl_enable | bool
+
+    - name: Записать ключ шифрования в Consul KV
+      ansible.builtin.uri:
+        url: "http://{{ ansible_default_ipv4.address }}:8500/v1/kv/secrets/encrypt_key"
+        method: PUT
+        body: "{{ consul_raw_key }}"
+        headers:
+          X-Consul-Token: "{{ consul_acl_master_token }}"
+        status_code: 200,201
+        body_format: raw
+      when: consul_acl_enable | bool
+  tags: vk_consul
