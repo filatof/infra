@@ -4,19 +4,27 @@
     state: present
 
 # Установим библиотеку docker для питона
-- name: Install required Python packages for Docker
-  pip:
-    name: docker
+#- name: Install required Python packages for Docker
+#  pip:
+#    name: docker
+#    state: present
+#    executable: pip3
+#  become: yes
+#
+#- name: Install required Python packages for Docker-compose
+#  pip:
+#    name: docker-compose
+#    state: present
+#    executable: pip3
+#  become: yes
+- name: Install required Python packages for Docker from APT
+  apt:
+    name:
+      - python3-docker
+      - docker-compose-plugin
     state: present
-    executable: pip3 
   become: yes
 
-- name: Install required Python packages for Docker-compose
-  pip:
-    name: docker-compose
-    state: present
-    executable: pip3 
-  become: yes
 
 - name: Copy docker-compose.yml to the server
   copy:
