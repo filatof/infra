@@ -1,0 +1,9 @@
+---
+- name: Assemble install gitlab server
+  hosts: gitlab
+  any_errors_fatal: true
+  become: true
+  become_user: root
+  roles:
+    - ansible-role-gitlab
+  tags: gitlab
