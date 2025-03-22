@@ -38,8 +38,17 @@
   tags: grafana
 
 - name: Install Node exporter
-  hosts: all
+  hosts: server1, server2, server3
   become: true
   roles:
     - node-exporter
   tags: node_exporter
+
+- name: Install VictoriaMetrics
+  hosts: monitoring
+  become: true
+  roles:
+    - victoriametrics-ansible-roles
+  tags: victoriametrics
+
+
