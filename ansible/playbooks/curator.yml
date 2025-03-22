@@ -1,0 +1,5 @@
+- hosts: 192.168.1.71
+  vars:
+    elasticsearch_curator_version: '8.0.19'
+  roles:
+    - role: ansible-role-elasticsearch-curator
